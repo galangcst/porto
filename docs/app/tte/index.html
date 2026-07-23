@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi TTE Presisi - Edit Posisi</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #4361ee;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+            --muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            width: 100%;
+            max-width: 1250px;
+            margin: auto;
+        }
+
+        .kontrol-panel {
+            background: var(--card);
+            padding: 26px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            flex: 1;
+            min-width: 340px;
+            max-width: 430px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .kontrol-panel h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+            text-align: center;
+        }
+
+        .sub-title {
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: -8px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .mode-btn.active {
+            border-color: var(--primary);
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
+        .upload-box {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .upload-box:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .upload-box input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 23px;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .file-name {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .btn {
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.25s;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .btn-proses {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-proses:hover {
+            background-color: #3b52d9;
+            transform: translateY(-1px);
+        }
+
+        .btn-download {
+            background-color: var(--success);
+            color: white;
+            display: none;
+        }
+
+        .btn-reset {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-small {
+            padding: 8px 10px;
+            font-size: 12px;
+            border-radius: 8px;
+        }
+
+        #progressContainer {
+            display: none;
+            margin-top: 5px;
+        }
+
+        .progress-text-box {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            background-color: var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            height: 10px;
+        }
+
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background-color: var(--primary);
+            transition: width 0.2s ease-in-out;
+        }
+
+        #statusText {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .preview-panel {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            flex: 2;
+            min-width: 420px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-nav {
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            border: 1px solid var(--border);
+        }
+
+        .preview-nav button {
+            width: auto;
+            padding: 8px 16px;
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .preview-nav button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #previewCounter {
+            font-size: 14px;
+            font-weight: 800;
+            color: #64748b;
+        }
+
+        iframe {
+            width: 100%;
+            flex-grow: 1;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background-color: #cbd5e1;
+            min-height: 565px;
+        }
+
+        .edit-box {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            background: #f8fafc;
+        }
+
+        .edit-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .edit-title {
+            font-weight: 900;
+            color: #0f172a;
+            font-size: 15px;
+        }
+
+        .edit-desc {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .edit-content {
+            margin-top: 14px;
+            display: block;
+        }
+
+        .setting-row {
+            margin-bottom: 12px;
+        }
+
+        .setting-row label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: #475569;
+            margin-bottom: 5px;
+        }
+
+        .value-badge {
+            background: white;
+            border: 1px solid var(--border);
+            color: #0f172a;
+            padding: 3px 7px;
+            border-radius: 999px;
+            font-size: 11px;
+            min-width: 48px;
+            text-align: center;
+        }
+
+        .setting-row input[type="text"],
+        .setting-row input[type="number"],
+        .setting-row select {
+            width: 100%;
+            padding: 9px 10px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            font-weight: 700;
+            color: #0f172a;
+            background: white;
+        }
+
+        .setting-row input[type="range"] {
+            width: 100%;
+        }
+
+        .grid-btn {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+            margin-top: 8px;
+        }
+
+        .move-btn {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .move-btn:hover {
+            background: #eff6ff;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px;
+            margin-top: 8px;
+        }
+
+        .preset-btn {
+            border: 1px solid var(--border);
+            background: white;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .mini-info {
+            background: #eff6ff;
+            color: #1e3a8a;
+            border: 1px solid #bfdbfe;
+            padding: 9px;
+            border-radius: 9px;
+            font-size: 11px;
+            line-height: 1.45;
+            font-weight: 600;
+        }
+
+        .danger-info {
+            background: #fff7ed;
+            color: #9a3412;
+            border: 1px solid #fed7aa;
+            padding: 9px;
+            border-radius: 9px;
+            font-size: 11px;
+            line-height: 1.45;
+            font-weight: 600;
+        }
+
+        #editorWrap {
+            position: relative;
+            display: none;
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            background: #cbd5e1;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #editorCanvas {
+            display: block;
+        }
+
+        #qrOverlay {
+            position: absolute;
+            display: none;
+            cursor: move;
+            touch-action: none;
+            outline: 2px dashed var(--primary);
+            outline-offset: 2px;
+            background: rgba(67, 97, 238, 0.06);
+        }
+
+        #qrOverlay img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            pointer-events: none;
+            -webkit-user-drag: none;
+        }
+
+        .qr-handle {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #ffffff;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            touch-action: none;
+            z-index: 5;
+        }
+
+        .qr-nw { left: -10px; top: -10px; cursor: nwse-resize; }
+        .qr-ne { right: -10px; top: -10px; cursor: nesw-resize; }
+        .qr-sw { left: -10px; bottom: -10px; cursor: nesw-resize; }
+        .qr-se { right: -10px; bottom: -10px; cursor: nwse-resize; }
+
+        .editor-hint {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        .btn-editor {
+            background: #eff6ff;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-editor:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding: 10px;
+            }
+
+            .preview-panel {
+                min-width: 100%;
+            }
+
+            .kontrol-panel {
+                max-width: none;
+            }
+
+            iframe {
+                min-height: 500px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="kontrol-panel">
+        <h2>Aplikasi TTE Presisi</h2>
+        <div class="sub-title">QR / barcode bisa diatur langsung dari menu edit</div>
+
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="btn-ijazah" onclick="setMode('ijazah')">🎓 e-Ijazah</button>
+            <button class="mode-btn" id="btn-transkrip" onclick="setMode('transkrip')">📄 e-Transkrip</button>
+        </div>
+
+        <label class="upload-box">
+            <span class="upload-icon">📷</span>
+            <span class="upload-text">Pilih Gambar QR / Barcode</span>
+            <span class="file-name" id="labelBarcode">Format: PNG atau JPG</span>
+            <input type="file" id="barcodeFile" accept="image/*" onchange="updateLabel('barcodeFile', 'labelBarcode')">
+        </label>
+
+        <label class="upload-box">
+            <span class="upload-icon">📑</span>
+            <span class="upload-text">Pilih Dokumen PDF</span>
+            <span class="file-name" id="labelPdf">Bisa 1 PDF isi banyak halaman</span>
+            <input type="file" id="pdfFiles" accept="application/pdf" multiple onchange="updateLabel('pdfFiles', 'labelPdf')">
+        </label>
+
+        <div class="edit-box">
+            <div class="edit-header" onclick="toggleEditPanel()">
+                <div>
+                    <div class="edit-title">⚙️ Edit Posisi TTE</div>
+                    <div class="edit-desc">Atur ukuran, geser kiri/kanan, dan naik/turun QR.</div>
+                </div>
+                <div id="editArrow">▲</div>
+            </div>
+
+            <div class="edit-content" id="editContent">
+                <div class="mini-info">
+                    Mode yang diedit mengikuti tombol aktif di atas.
+                    Pilih <b>e-Ijazah</b> atau <b>e-Transkrip</b>, lalu atur posisinya.
+                </div>
+
+                <button class="btn btn-editor" style="margin-top:12px;" onclick="bukaEditorVisual()">
+                    🖱️ Edit Visual: Geser &amp; Tarik Ukuran QR
+                </button>
+                <div class="edit-desc" style="margin-top:6px;">
+                    Klik &amp; tahan QR untuk menggeser, tarik 4 titik di sudut untuk mengubah ukuran.
+                </div>
+
+                <div class="setting-row" style="margin-top:12px;">
+                    <label>
+                        Kata Patokan
+                        <span class="value-badge" id="valKata">kepala</span>
+                    </label>
+                    <input type="text" id="inputKata" oninput="updateSettingFromUI()" placeholder="contoh: kepala">
+                </div>
+
+                <div class="setting-row">
+                    <label>
+                        Ukuran QR
+                        <span class="value-badge" id="valUkuran">58</span>
+                    </label>
+                    <input type="range" id="inputUkuran" min="20" max="300" step="1" oninput="updateSettingFromUI()">
+                </div>
+
+                <div class="setting-row">
+                    <label>
+                        Geser Kanan / Kiri
+                        <span class="value-badge" id="valX">0</span>
+                    </label>
+                    <input type="range" id="inputX" min="-400" max="400" step="1" oninput="updateSettingFromUI()">
+                </div>
+
+                <div class="setting-row">
+                    <label>
+                        Geser Atas / Bawah
+                        <span class="value-badge" id="valY">-70</span>
+                    </label>
+                    <input type="range" id="inputY" min="-400" max="400" step="1" oninput="updateSettingFromUI()">
+                </div>
+
+                <div class="grid-btn">
+                    <button class="move-btn" onclick="geserCepat(0, 0)">•</button>
+                    <button class="move-btn" onclick="geserCepat(0, 5)">⬆️ Naik</button>
+                    <button class="move-btn" onclick="ubahUkuran(3)">＋ Besar</button>
+
+                    <button class="move-btn" onclick="geserCepat(-5, 0)">⬅️ Kiri</button>
+                    <button class="move-btn" onclick="prosesSemua()">🔁 Preview</button>
+                    <button class="move-btn" onclick="geserCepat(5, 0)">➡️ Kanan</button>
+
+                    <button class="move-btn" onclick="ubahUkuran(-3)">－ Kecil</button>
+                    <button class="move-btn" onclick="geserCepat(0, -5)">⬇️ Turun</button>
+                    <button class="move-btn" onclick="resetModeAktif()">Reset</button>
+                </div>
+
+                <div class="preset-grid">
+                    <button class="preset-btn" onclick="pakaiPreset('transkrip')">Preset Transkrip</button>
+                    <button class="preset-btn" onclick="pakaiPreset('ijazah')">Preset Ijazah</button>
+                    <button class="preset-btn" onclick="simpanSetting()">💾 Simpan</button>
+                    <button class="preset-btn" onclick="resetSemua()">Reset Semua</button>
+                </div>
+
+                <div class="danger-info" style="margin-top:10px;">
+                    Catatan: setelah mengubah posisi, klik <b>Preview</b> atau <b>Proses Dokumen</b> untuk melihat hasil terbaru.
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-proses" onclick="prosesSemua()">🚀 Proses Dokumen</button>
+
+        <div id="progressContainer">
+            <div class="progress-text-box">
+                <span id="progressText">Memulai proses...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div id="progressBar"></div>
+            </div>
+        </div>
+
+        <button class="btn btn-download" id="btnDownload" onclick="unduhKolektif()">📥 Download Semua (ZIP)</button>
+
+        <div id="statusText"></div>
+    </div>
+
+    <div class="preview-panel">
+        <div class="preview-nav" id="editorNav" style="display:none;">
+            <span class="editor-hint">🖱️ Geser QR dengan klik &amp; tahan. Tarik titik sudut untuk ubah ukuran.</span>
+            <div style="display:flex; gap:8px;">
+                <button onclick="terapkanEditorVisual()" style="background:var(--success); color:white; border:none;">✔ Terapkan</button>
+                <button onclick="tutupEditorVisual()">✕ Tutup</button>
+            </div>
+        </div>
+
+        <div id="editorWrap">
+            <canvas id="editorCanvas"></canvas>
+            <div id="qrOverlay">
+                <img id="qrOverlayImg" alt="QR">
+                <div class="qr-handle qr-nw" data-handle="nw"></div>
+                <div class="qr-handle qr-ne" data-handle="ne"></div>
+                <div class="qr-handle qr-sw" data-handle="sw"></div>
+                <div class="qr-handle qr-se" data-handle="se"></div>
+            </div>
+        </div>
+
+        <div class="preview-nav" id="previewNav">
+            <button id="btnPrev" onclick="gantiPreview(-1)">◀ Prev File</button>
+            <span id="previewCounter">0 / 0</span>
+            <button id="btnNext" onclick="gantiPreview(1)">Next File ▶</button>
+        </div>
+
+        <iframe id="previewFrame" src="about:blank"></iframe>
+    </div>
+</div>
+
+<script>
+    const DEFAULT_SETTING = {
+        ijazah: {
+            kataKunci: "kepala",
+            lebarBarcode: 76,
+            geserKanan: 0,
+            geserAtas: -82
+        },
+        transkrip: {
+            kataKunci: "kepala",
+            lebarBarcode: 58,
+            geserKanan: 0,
+            geserAtas: -70
+        }
+    };
+
+    let SETTING = loadSetting();
+    let modeAktif = 'ijazah';
+    let hasilPdfs = [];
+    let currentIndex = 0;
+
+    const LIB_SIAP = typeof pdfjsLib !== "undefined"
+        && typeof PDFLib !== "undefined"
+        && typeof JSZip !== "undefined";
+
+    if (LIB_SIAP) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    }
+
+    function clone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+    }
+
+    function angkaAman(nilai, fallback) {
+        const n = Number(nilai);
+        return Number.isFinite(n) ? n : fallback;
+    }
+
+    function bersihkanSetting(parsed, def) {
+        const p = parsed || {};
+        return {
+            kataKunci: (typeof p.kataKunci === "string" && p.kataKunci.trim())
+                ? p.kataKunci.trim()
+                : def.kataKunci,
+            lebarBarcode: angkaAman(p.lebarBarcode, def.lebarBarcode),
+            geserKanan: angkaAman(p.geserKanan, def.geserKanan),
+            geserAtas: angkaAman(p.geserAtas, def.geserAtas)
+        };
+    }
+
+    function loadSetting() {
+        try {
+            const saved = localStorage.getItem("TTE_SETTING_PRESISI");
+            if (!saved) return clone(DEFAULT_SETTING);
+
+            const parsed = JSON.parse(saved);
+
+            return {
+                ijazah: bersihkanSetting(parsed.ijazah, DEFAULT_SETTING.ijazah),
+                transkrip: bersihkanSetting(parsed.transkrip, DEFAULT_SETTING.transkrip)
+            };
+        } catch (e) {
+            return clone(DEFAULT_SETTING);
+        }
+    }
+
+    function simpanSetting(showAlert = true) {
+        try {
+            localStorage.setItem("TTE_SETTING_PRESISI", JSON.stringify(SETTING));
+        } catch (e) {
+            console.warn("Gagal menyimpan setting:", e);
+        }
+        if (showAlert === true) {
+            showStatus("✅ Setting posisi berhasil disimpan.", "success");
+        }
+    }
+
+    function setMode(mode) {
+        modeAktif = mode;
+
+        document.getElementById('btn-ijazah').classList.toggle('active', mode === 'ijazah');
+        document.getElementById('btn-transkrip').classList.toggle('active', mode === 'transkrip');
+
+        isiSettingKeUI();
+    }
+
+    function toggleEditPanel() {
+        const content = document.getElementById("editContent");
+        const arrow = document.getElementById("editArrow");
+
+        if (content.style.display === "none") {
+            content.style.display = "block";
+            arrow.innerText = "▲";
+        } else {
+            content.style.display = "none";
+            arrow.innerText = "▼";
+        }
+    }
+
+    function isiSettingKeUI() {
+        const s = SETTING[modeAktif];
+
+        document.getElementById("inputKata").value = s.kataKunci;
+        document.getElementById("inputUkuran").value = s.lebarBarcode;
+        document.getElementById("inputX").value = s.geserKanan;
+        document.getElementById("inputY").value = s.geserAtas;
+
+        refreshBadge();
+    }
+
+    function refreshBadge() {
+        document.getElementById("valKata").innerText = document.getElementById("inputKata").value || "kepala";
+        document.getElementById("valUkuran").innerText = document.getElementById("inputUkuran").value;
+        document.getElementById("valX").innerText = document.getElementById("inputX").value;
+        document.getElementById("valY").innerText = document.getElementById("inputY").value;
+    }
+
+    function batasi(nilai, min, max, fallback) {
+        const n = Number(nilai);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.min(max, Math.max(min, n));
+    }
+
+    function updateSettingFromUI() {
+        const kata = document.getElementById("inputKata").value.trim() || "kepala";
+        const ukuran = batasi(document.getElementById("inputUkuran").value, 20, 300, DEFAULT_SETTING[modeAktif].lebarBarcode);
+        const x = batasi(document.getElementById("inputX").value, -400, 400, 0);
+        const y = batasi(document.getElementById("inputY").value, -400, 400, DEFAULT_SETTING[modeAktif].geserAtas);
+
+        SETTING[modeAktif] = {
+            kataKunci: kata,
+            lebarBarcode: ukuran,
+            geserKanan: x,
+            geserAtas: y
+        };
+
+        refreshBadge();
+        simpanSetting(false);
+    }
+
+    function geserCepat(dx, dy) {
+        const inputX = document.getElementById("inputX");
+        const inputY = document.getElementById("inputY");
+
+        inputX.value = Number(inputX.value) + dx;
+        inputY.value = Number(inputY.value) + dy;
+
+        updateSettingFromUI();
+    }
+
+    function ubahUkuran(delta) {
+        const inputUkuran = document.getElementById("inputUkuran");
+        inputUkuran.value = Number(inputUkuran.value) + delta;
+        updateSettingFromUI();
+    }
+
+    function pakaiPreset(tipe) {
+        if (tipe !== "transkrip" && tipe !== "ijazah") return;
+
+        SETTING[tipe] = clone(DEFAULT_SETTING[tipe]);
+        setMode(tipe);
+        simpanSetting();
+    }
+
+    function resetModeAktif() {
+        SETTING[modeAktif] = clone(DEFAULT_SETTING[modeAktif]);
+        isiSettingKeUI();
+        simpanSetting();
+    }
+
+    function resetSemua() {
+        if (!confirm("Reset semua setting e-Ijazah dan e-Transkrip?")) return;
+
+        SETTING = clone(DEFAULT_SETTING);
+        localStorage.removeItem("TTE_SETTING_PRESISI");
+        isiSettingKeUI();
+
+        showStatus("✅ Semua setting dikembalikan ke awal.", "success");
+    }
+
+    function updateLabel(inputId, labelId) {
+        const input = document.getElementById(inputId);
+        const label = document.getElementById(labelId);
+
+        if (input.files.length > 0) {
+            label.innerText = input.files.length === 1
+                ? input.files[0].name
+                : `${input.files.length} file terpilih`;
+
+            label.style.color = "var(--success)";
+        } else {
+            label.innerText = inputId === 'barcodeFile'
+                ? "Format: PNG atau JPG"
+                : "Bisa 1 PDF isi banyak halaman";
+            label.style.color = "var(--primary)";
+        }
+    }
+
+    function showStatus(text, type) {
+        const statusEl = document.getElementById('statusText');
+        statusEl.innerText = text;
+        statusEl.style.display = "block";
+
+        if (type === 'process') {
+            statusEl.style.background = "#fff3cd";
+            statusEl.style.color = "#856404";
+        } else if (type === 'success') {
+            statusEl.style.background = "#d1fae5";
+            statusEl.style.color = "#065f46";
+        } else if (type === 'error') {
+            statusEl.style.background = "#fee2e2";
+            statusEl.style.color = "#991b1b";
+        } else {
+            statusEl.style.background = "#e0f2fe";
+            statusEl.style.color = "#075985";
+        }
+    }
+
+    async function cariKoordinatTeks(pdfjsDoc, pageNum, kataKunci) {
+        const page = await pdfjsDoc.getPage(pageNum);
+        const textContent = await page.getTextContent();
+
+        let koordinatTerbawah = null;
+        let nilaiYTerendah = Infinity;
+
+        for (let item of textContent.items) {
+            const teks = String(item.str || "").toLowerCase();
+
+            if (teks.includes(String(kataKunci).toLowerCase())) {
+                const xSekarang = item.transform[4];
+                const ySekarang = item.transform[5];
+
+                if (ySekarang < nilaiYTerendah) {
+                    nilaiYTerendah = ySekarang;
+                    koordinatTerbawah = {
+                        x: xSekarang,
+                        y: ySekarang,
+                        text: item.str
+                    };
+                }
+            }
+        }
+
+        return koordinatTerbawah;
+    }
+
+    function getBarcodeImage(file) {
+        return new Promise((resolve, reject) => {
+            if (!file.type.startsWith("image/")) {
+                reject(new Error("File QR harus berupa gambar (PNG/JPG)."));
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const img = new Image();
+
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+
+                    const data = canvas.toDataURL('image/png').split(',')[1];
+                    const bin = atob(data);
+                    const bytes = new Uint8Array(bin.length);
+
+                    for (let i = 0; i < bin.length; i++) {
+                        bytes[i] = bin.charCodeAt(i);
+                    }
+
+                    resolve({
+                        buffer: bytes.buffer,
+                        w: img.width,
+                        h: img.height
+                    });
+                };
+
+                img.onerror = () => reject(new Error("Gagal membaca gambar QR."));
+                img.src = e.target.result;
+            };
+
+            reader.onerror = () => reject(new Error("File QR tidak bisa dibaca."));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function tempelBarcodeOtomatis(filePdf, barcodeData, config) {
+        const bufferSatu = await filePdf.arrayBuffer();
+
+        const pdfjsDoc = await pdfjsLib.getDocument({
+            data: new Uint8Array(bufferSatu)
+        }).promise;
+
+        try {
+            const pdfDoc = await PDFLib.PDFDocument.load(bufferSatu.slice(0));
+            const pages = pdfDoc.getPages();
+
+            const image = await pdfDoc.embedPng(barcodeData.buffer);
+
+            let fileBerhasil = false;
+
+            for (let i = 0; i < pages.length; i++) {
+                const koordinat = await cariKoordinatTeks(pdfjsDoc, i + 1, config.kataKunci);
+
+                if (koordinat) {
+                    const page = pages[i];
+
+                    const rasio = barcodeData.h / barcodeData.w;
+                    const tinggiBarcode = Number(config.lebarBarcode) * rasio;
+
+                    const posX = koordinat.x + Number(config.geserKanan);
+                    const posY = koordinat.y + Number(config.geserAtas);
+
+                    page.drawImage(image, {
+                        x: posX,
+                        y: posY,
+                        width: Number(config.lebarBarcode),
+                        height: tinggiBarcode
+                    });
+
+                    fileBerhasil = true;
+                }
+            }
+
+            if (!fileBerhasil) {
+                throw new Error(`Kata "${config.kataKunci}" tidak ditemukan di PDF.`);
+            }
+
+            return await pdfDoc.save();
+        } finally {
+            if (pdfjsDoc && typeof pdfjsDoc.destroy === "function") {
+                pdfjsDoc.destroy();
+            }
+        }
+    }
+
+    function perbaruiLayarPreview() {
+        if (hasilPdfs.length === 0) return;
+
+        document.getElementById('previewFrame').src = hasilPdfs[currentIndex].url;
+        document.getElementById('previewCounter').innerText =
+            `${currentIndex + 1} / ${hasilPdfs.length}`;
+
+        document.getElementById('btnPrev').disabled = currentIndex === 0;
+        document.getElementById('btnNext').disabled = currentIndex === hasilPdfs.length - 1;
+    }
+
+    function gantiPreview(arah) {
+        const baru = currentIndex + arah;
+        if (baru < 0 || baru > hasilPdfs.length - 1) return;
+
+        currentIndex = baru;
+        perbaruiLayarPreview();
+    }
+
+    let sedangProses = false;
+
+    async function prosesSemua() {
+        if (sedangProses) {
+            showStatus("⏳ Masih ada proses berjalan, mohon tunggu.", "process");
+            return;
+        }
+
+        if (!LIB_SIAP) {
+            showStatus("❌ Library PDF gagal dimuat. Periksa koneksi internet lalu refresh halaman.", "error");
+            return;
+        }
+
+        updateSettingFromUI();
+
+        const barcodeInput = document.getElementById('barcodeFile').files[0];
+        const pdfInput = Array.from(document.getElementById('pdfFiles').files);
+
+        const btnDownload = document.getElementById('btnDownload');
+        const previewNav = document.getElementById('previewNav');
+        const progContainer = document.getElementById('progressContainer');
+        const progBar = document.getElementById('progressBar');
+        const progText = document.getElementById('progressText');
+        const progPercent = document.getElementById('progressPercent');
+        const statusEl = document.getElementById('statusText');
+
+        if (!barcodeInput || pdfInput.length === 0) {
+            showStatus("⚠️ Harap pilih gambar QR/barcode dan file PDF.", "error");
+            return;
+        }
+
+        sedangProses = true;
+
+        document.getElementById('previewFrame').src = "about:blank";
+        hasilPdfs.forEach(pdf => URL.revokeObjectURL(pdf.url));
+        hasilPdfs = [];
+        currentIndex = 0;
+
+        btnDownload.style.display = "none";
+        previewNav.style.display = "none";
+        statusEl.style.display = "none";
+
+        progContainer.style.display = "block";
+        progBar.style.width = "0%";
+        progPercent.innerText = "0%";
+
+        const configPilihan = SETTING[modeAktif];
+        const gagalList = [];
+
+        try {
+            const barcodeData = await getBarcodeImage(barcodeInput);
+
+            for (let i = 0; i < pdfInput.length; i++) {
+                const file = pdfInput[i];
+
+                progText.innerText = `Memproses (${i + 1}/${pdfInput.length}): ${file.name}`;
+
+                try {
+                    const finalPdf = await tempelBarcodeOtomatis(
+                        file,
+                        barcodeData,
+                        configPilihan
+                    );
+
+                    const blob = new Blob([finalPdf], {
+                        type: 'application/pdf'
+                    });
+
+                    const prefix = modeAktif === 'ijazah'
+                        ? "TTE_Ijazah_"
+                        : "TTE_Transkrip_";
+
+                    hasilPdfs.push({
+                        name: prefix + file.name,
+                        blob: blob,
+                        url: URL.createObjectURL(blob)
+                    });
+
+                } catch (e) {
+                    console.error(`Gagal memproses ${file.name}:`, e);
+                    gagalList.push(file.name);
+                }
+
+                const persen = Math.round(((i + 1) / pdfInput.length) * 100);
+                progBar.style.width = persen + "%";
+                progPercent.innerText = persen + "%";
+
+                await new Promise(resolve => setTimeout(resolve, 30));
+            }
+
+            if (hasilPdfs.length > 0) {
+                progText.innerText = `Selesai! ${hasilPdfs.length}/${pdfInput.length} file berhasil diproses.`;
+                previewNav.style.display = "flex";
+                btnDownload.style.display = "flex";
+                perbaruiLayarPreview();
+
+                if (gagalList.length > 0) {
+                    showStatus(
+                        `⚠️ ${hasilPdfs.length} berhasil, ${gagalList.length} gagal: ${gagalList.join(", ")}`,
+                        "error"
+                    );
+                } else {
+                    showStatus("✅ Semua dokumen berhasil diproses.", "success");
+                }
+            } else {
+                showStatus(`❌ Gagal. Kata "${configPilihan.kataKunci}" tidak ditemukan di PDF (atau file PDF rusak).`, "error");
+                progContainer.style.display = "none";
+            }
+
+        } catch (error) {
+            console.error(error);
+            showStatus(`❌ Terjadi kesalahan: ${error.message || "kesalahan sistem"}`, "error");
+            progContainer.style.display = "none";
+        } finally {
+            sedangProses = false;
+        }
+    }
+
+    let sedangZip = false;
+
+    async function unduhKolektif() {
+        if (hasilPdfs.length === 0) {
+            showStatus("⚠️ Belum ada file hasil proses.", "error");
+            return;
+        }
+
+        if (sedangZip) return;
+        sedangZip = true;
+
+        try {
+            showStatus("⏳ Mengemas file ke ZIP...", "process");
+
+            const zip = new JSZip();
+            const namaTerpakai = {};
+
+            hasilPdfs.forEach(pdf => {
+                let nama = pdf.name;
+
+                if (namaTerpakai[nama]) {
+                    const nomor = ++namaTerpakai[nama];
+                    nama = nama.replace(/\.pdf$/i, "") + ` (${nomor}).pdf`;
+                } else {
+                    namaTerpakai[nama] = 1;
+                }
+
+                zip.file(nama, pdf.blob);
+            });
+
+            const zipBlob = await zip.generateAsync({
+                type: "blob"
+            });
+
+            const link = document.createElement("a");
+            const zipUrl = URL.createObjectURL(zipBlob);
+            link.href = zipUrl;
+            link.download = `Hasil_TTE_${modeAktif.toUpperCase()}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(zipUrl), 10000);
+
+            showStatus("✅ ZIP berhasil diunduh!", "success");
+        } catch (e) {
+            console.error(e);
+            showStatus("❌ Gagal membuat ZIP.", "error");
+        } finally {
+            sedangZip = false;
+        }
+    }
+
+    // ===================== EDITOR VISUAL (DRAG & RESIZE) =====================
+
+    let editor = {
+        aktif: false,
+        scale: 1,          // piksel canvas per unit PDF
+        anchor: null,      // koordinat kata patokan di PDF
+        rasioQr: 1,        // tinggi/lebar gambar QR
+        canvasH: 0,
+        canvasW: 0
+    };
+
+    function bacaFileSebagaiDataURL(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.onerror = () => reject(new Error("Gagal membaca file."));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function bukaEditorVisual() {
+        if (!LIB_SIAP) {
+            showStatus("❌ Library PDF gagal dimuat. Periksa koneksi internet lalu refresh.", "error");
+            return;
+        }
+
+        const barcodeInput = document.getElementById('barcodeFile').files[0];
+        const pdfInput = document.getElementById('pdfFiles').files[0];
+
+        if (!barcodeInput || !pdfInput) {
+            showStatus("⚠️ Pilih dulu gambar QR dan minimal 1 file PDF untuk membuka editor visual.", "error");
+            return;
+        }
+
+        updateSettingFromUI();
+        showStatus("⏳ Membuka editor visual...", "process");
+
+        let pdfjsDoc = null;
+
+        try {
+            const buffer = await pdfInput.arrayBuffer();
+            pdfjsDoc = await pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise;
+
+            const config = SETTING[modeAktif];
+
+            // Cari halaman pertama yang mengandung kata patokan
+            let anchor = null;
+            let pageNum = 1;
+
+            for (let i = 1; i <= pdfjsDoc.numPages; i++) {
+                const hasil = await cariKoordinatTeks(pdfjsDoc, i, config.kataKunci);
+                if (hasil) {
+                    anchor = hasil;
+                    pageNum = i;
+                    break;
+                }
+            }
+
+            if (!anchor) {
+                showStatus(`❌ Kata "${config.kataKunci}" tidak ditemukan di PDF. Editor tidak bisa dibuka.`, "error");
+                return;
+            }
+
+            const page = await pdfjsDoc.getPage(pageNum);
+
+            // Skala render menyesuaikan lebar panel preview
+            const wrap = document.getElementById('editorWrap');
+            const panel = wrap.parentElement;
+            const lebarTarget = Math.max(400, panel.clientWidth - 42);
+
+            const viewportAsli = page.getViewport({ scale: 1 });
+            const scale = lebarTarget / viewportAsli.width;
+            const viewport = page.getViewport({ scale: scale });
+
+            const canvas = document.getElementById('editorCanvas');
+            canvas.width = Math.floor(viewport.width);
+            canvas.height = Math.floor(viewport.height);
+
+            await page.render({
+                canvasContext: canvas.getContext('2d'),
+                viewport: viewport
+            }).promise;
+
+            // Siapkan gambar QR di overlay
+            const dataUrl = await bacaFileSebagaiDataURL(barcodeInput);
+            const imgEl = document.getElementById('qrOverlayImg');
+
+            await new Promise((resolve, reject) => {
+                imgEl.onload = resolve;
+                imgEl.onerror = () => reject(new Error("Gagal memuat gambar QR."));
+                imgEl.src = dataUrl;
+            });
+
+            editor.aktif = true;
+            editor.scale = scale;
+            editor.anchor = anchor;
+            editor.rasioQr = imgEl.naturalHeight / imgEl.naturalWidth;
+            editor.canvasW = canvas.width;
+            editor.canvasH = canvas.height;
+
+            // Posisi awal overlay dari setting sekarang
+            posisikanOverlayDariSetting();
+
+            wrap.style.display = "block";
+            document.getElementById('qrOverlay').style.display = "block";
+            document.getElementById('editorNav').style.display = "flex";
+            document.getElementById('previewNav').style.display = "none";
+            document.getElementById('previewFrame').style.display = "none";
+
+            showStatus("🖱️ Geser QR ke posisi yang diinginkan, tarik titik sudut untuk ubah ukuran, lalu klik Terapkan.", "info");
+        } catch (e) {
+            console.error(e);
+            showStatus(`❌ Gagal membuka editor: ${e.message || "kesalahan sistem"}`, "error");
+        } finally {
+            if (pdfjsDoc && typeof pdfjsDoc.destroy === "function") {
+                pdfjsDoc.destroy();
+            }
+        }
+    }
+
+    // Konversi setting (koordinat PDF) -> posisi overlay (piksel canvas)
+    function posisikanOverlayDariSetting() {
+        const config = SETTING[modeAktif];
+        const overlay = document.getElementById('qrOverlay');
+
+        const lebarPx = Number(config.lebarBarcode) * editor.scale;
+        const tinggiPx = lebarPx * editor.rasioQr;
+
+        // PDF: origin kiri-bawah. Canvas: origin kiri-atas.
+        const posXpdf = editor.anchor.x + Number(config.geserKanan);
+        const posYpdf = editor.anchor.y + Number(config.geserAtas);
+
+        const leftPx = posXpdf * editor.scale;
+        const topPx = editor.canvasH - (posYpdf * editor.scale) - tinggiPx;
+
+        overlay.style.width = lebarPx + "px";
+        overlay.style.height = tinggiPx + "px";
+        overlay.style.left = leftPx + "px";
+        overlay.style.top = topPx + "px";
+    }
+
+    // Konversi posisi overlay (piksel canvas) -> setting (koordinat PDF)
+    function settingDariOverlay() {
+        const overlay = document.getElementById('qrOverlay');
+
+        const leftPx = parseFloat(overlay.style.left) || 0;
+        const topPx = parseFloat(overlay.style.top) || 0;
+        const lebarPx = parseFloat(overlay.style.width) || 1;
+        const tinggiPx = parseFloat(overlay.style.height) || 1;
+
+        const lebarPdf = lebarPx / editor.scale;
+        const posXpdf = leftPx / editor.scale;
+        const posYpdf = (editor.canvasH - topPx - tinggiPx) / editor.scale;
+
+        return {
+            lebarBarcode: Math.round(lebarPdf),
+            geserKanan: Math.round(posXpdf - editor.anchor.x),
+            geserAtas: Math.round(posYpdf - editor.anchor.y)
+        };
+    }
+
+    function terapkanEditorVisual() {
+        if (!editor.aktif) return;
+
+        const hasil = settingDariOverlay();
+        const config = SETTING[modeAktif];
+
+        config.lebarBarcode = hasil.lebarBarcode;
+        config.geserKanan = hasil.geserKanan;
+        config.geserAtas = hasil.geserAtas;
+
+        isiSettingKeUI();
+        simpanSetting(false);
+        tutupEditorVisual();
+
+        showStatus("✅ Posisi & ukuran diterapkan. Memproses ulang dokumen...", "success");
+        prosesSemua();
+    }
+
+    function tutupEditorVisual() {
+        editor.aktif = false;
+        document.getElementById('editorWrap').style.display = "none";
+        document.getElementById('qrOverlay').style.display = "none";
+        document.getElementById('editorNav').style.display = "none";
+        document.getElementById('previewFrame').style.display = "block";
+
+        if (hasilPdfs.length > 0) {
+            document.getElementById('previewNav').style.display = "flex";
+        }
+    }
+
+    // ---------- Drag & resize dengan pointer events ----------
+    (function pasangInteraksiOverlay() {
+        const overlay = document.getElementById('qrOverlay');
+
+        let modeDrag = null;   // 'move' | 'nw' | 'ne' | 'sw' | 'se'
+        let awal = null;       // snapshot posisi saat pointerdown
+
+        function clampOverlay(left, top, w) {
+            const minSize = 20 * (editor.scale || 1);
+            w = Math.max(minSize, w);
+            const h = w * editor.rasioQr;
+
+            left = Math.min(Math.max(left, -w * 0.9), editor.canvasW - w * 0.1);
+            top = Math.min(Math.max(top, -h * 0.9), editor.canvasH - h * 0.1);
+
+            return { left, top, w, h };
+        }
+
+        overlay.addEventListener('pointerdown', (e) => {
+            if (!editor.aktif) return;
+
+            const handle = e.target.dataset ? e.target.dataset.handle : null;
+            modeDrag = handle || 'move';
+
+            awal = {
+                px: e.clientX,
+                py: e.clientY,
+                left: parseFloat(overlay.style.left) || 0,
+                top: parseFloat(overlay.style.top) || 0,
+                w: parseFloat(overlay.style.width) || 1,
+                h: parseFloat(overlay.style.height) || 1
+            };
+
+            overlay.setPointerCapture(e.pointerId);
+            e.preventDefault();
+        });
+
+        overlay.addEventListener('pointermove', (e) => {
+            if (!modeDrag || !awal) return;
+
+            const dx = e.clientX - awal.px;
+            const dy = e.clientY - awal.py;
+
+            let left = awal.left;
+            let top = awal.top;
+            let w = awal.w;
+
+            if (modeDrag === 'move') {
+                left = awal.left + dx;
+                top = awal.top + dy;
+            } else if (modeDrag === 'se') {
+                w = awal.w + dx;
+            } else if (modeDrag === 'ne') {
+                w = awal.w + dx;
+                top = awal.top + awal.h - (w * editor.rasioQr);
+            } else if (modeDrag === 'sw') {
+                w = awal.w - dx;
+                left = awal.left + awal.w - w;
+            } else if (modeDrag === 'nw') {
+                w = awal.w - dx;
+                left = awal.left + awal.w - w;
+                top = awal.top + awal.h - (w * editor.rasioQr);
+            }
+
+            const hasil = clampOverlay(left, top, w);
+
+            overlay.style.left = hasil.left + "px";
+            overlay.style.top = hasil.top + "px";
+            overlay.style.width = hasil.w + "px";
+            overlay.style.height = hasil.h + "px";
+        });
+
+        function selesaiDrag(e) {
+            if (!modeDrag) return;
+            modeDrag = null;
+            awal = null;
+            try { overlay.releasePointerCapture(e.pointerId); } catch (err) {}
+        }
+
+        overlay.addEventListener('pointerup', selesaiDrag);
+        overlay.addEventListener('pointercancel', selesaiDrag);
+    })();
+
+    isiSettingKeUI();
+</script>
+
+</body>
+</html>
