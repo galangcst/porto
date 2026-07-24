@@ -6,4 +6,274 @@ function pt(e,t){return function(){return e.apply(t,arguments)}}const{toString:M
 `);return a===-1?"":s.stack.slice(a+1)})();try{if(!r.stack)r.stack=o;else if(o){const a=o.indexOf(`
 `),c=a===-1?-1:o.indexOf(`
 `,a+1),l=c===-1?"":o.slice(c+1);String(r.stack).endsWith(l)||(r.stack+=`
-`+o)}}catch{}}throw r}}_request(t,n){typeof t=="string"?(n=n||{},n.url=t):n=t||{},n=X(this.defaults,n);const{transitional:r,paramsSerializer:s,headers:o}=n;r!==void 0&&we.assertOptions(r,{silentJSONParsing:N.transitional(N.boolean),forcedJSONParsing:N.transitional(N.boolean),clarifyTimeoutError:N.transitional(N.boolean),legacyInterceptorReqResOrdering:N.transitional(N.boolean),advertiseZstdAcceptEncoding:N.transitional(N.boolean),validateStatusUndefinedResolves:N.transitional(N.boolean)},!1),s!=null&&(i.isFunction(s)?n.paramsSerializer={serialize:s}:we.assertOptions(s,{encode:N.function,serialize:N.function},!0)),n.allowAbsoluteUrls!==void 0||(this.defaults.allowAbsoluteUrls!==void 0?n.allowAbsoluteUrls=this.defaults.allowAbsoluteUrls:n.allowAbsoluteUrls=!0),we.assertOptions(n,{baseUrl:N.spelling("baseURL"),withXsrfToken:N.spelling("withXSRFToken")},!0),n.method=(n.method||this.defaults.method||"get").toLowerCase();let a=o&&i.merge(o.common,o[n.method]);o&&i.forEach(["delete","get","head","post","put","patch","query","common"],g=>{delete o[g]}),n.headers=L.concat(a,o);const c=[];let l=!0;this.interceptors.request.forEach(function(S){if(typeof S.runWhen=="function"&&S.runWhen(n)===!1)return;l=l&&S.synchronous;const m=n.transitional||qe;m&&m.legacyInterceptorReqResOrdering?c.unshift(S.fulfilled,S.rejected):c.push(S.fulfilled,S.rejected)});const f=[];this.interceptors.response.forEach(function(S){f.push(S.fulfilled,S.rejected)});let u,p=0,w;if(!l){const g=[ft.bind(this),void 0];for(g.unshift(...c),g.push(...f),w=g.length,u=Promise.resolve(n);p<w;)u=u.then(g[p++],g[p++]);return u}w=c.length;let b=n;for(;p<w;){const g=c[p++],S=c[p++];try{b=g(b)}catch(m){S.call(this,m);break}}try{u=ft.call(this,b)}catch(g){return Promise.reject(g)}for(p=0,w=f.length;p<w;)u=u.then(f[p++],f[p++]);return u}getUri(t){t=X(this.defaults,t);const n=Dt(t.baseURL,t.url,t.allowAbsoluteUrls,t);return Ct(n,t.params,t.paramsSerializer)}};i.forEach(["delete","get","head","options"],function(t){W.prototype[t]=function(n,r){return this.request(X(r||{},{method:t,url:n,data:r&&i.hasOwnProp(r,"data")?r.data:void 0}))}});i.forEach(["post","put","patch","query"],function(t){function n(r){return function(o,a,c){return this.request(X(c||{},{method:t,headers:r?{"Content-Type":"multipart/form-data"}:{},url:o,data:a}))}}W.prototype[t]=n(),t!=="query"&&(W.prototype[t+"Form"]=n(!0))});let kr=class It{constructor(t){if(typeof t!="function")throw new TypeError("executor must be a function.");let n;this.promise=new Promise(function(o){n=o});const r=this;this.promise.then(s=>{if(!r._listeners)return;let o=r._listeners.length;for(;o-- >0;)r._listeners[o](s);r._listeners=null}),this.promise.then=s=>{let o;const a=new Promise(c=>{r.subscribe(c),o=c}).then(s);return a.cancel=function(){r.unsubscribe(o)},a},t(function(o,a,c){r.reason||(r.reason=new ue(o,a,c),n(r.reason))})}throwIfRequested(){if(this.reason)throw this.reason}subscribe(t){if(this.reason){t(this.reason);return}this._listeners?this._listeners.push(t):this._listeners=[t]}unsubscribe(t){if(!this._listeners)return;const n=this._listeners.indexOf(t);n!==-1&&this._listeners.splice(n,1)}toAbortSignal(){const t=new AbortController,n=r=>{t.abort(r)};return this.subscribe(n),t.signal.unsubscribe=()=>this.unsubscribe(n),t.signal}static source(){let t;return{token:new It(function(s){t=s}),cancel:t}}};function jr(e){return function(n){return e.apply(null,n)}}function qr(e){return i.isObject(e)&&e.isAxiosError===!0}const Be={Continue:100,SwitchingProtocols:101,Processing:102,EarlyHints:103,Ok:200,Created:201,Accepted:202,NonAuthoritativeInformation:203,NoContent:204,ResetContent:205,PartialContent:206,MultiStatus:207,AlreadyReported:208,ImUsed:226,MultipleChoices:300,MovedPermanently:301,Found:302,SeeOther:303,NotModified:304,UseProxy:305,Unused:306,TemporaryRedirect:307,PermanentRedirect:308,BadRequest:400,Unauthorized:401,PaymentRequired:402,Forbidden:403,NotFound:404,MethodNotAllowed:405,NotAcceptable:406,ProxyAuthenticationRequired:407,RequestTimeout:408,Conflict:409,Gone:410,LengthRequired:411,PreconditionFailed:412,PayloadTooLarge:413,UriTooLong:414,UnsupportedMediaType:415,RangeNotSatisfiable:416,ExpectationFailed:417,ImATeapot:418,MisdirectedRequest:421,UnprocessableEntity:422,Locked:423,FailedDependency:424,TooEarly:425,UpgradeRequired:426,PreconditionRequired:428,TooManyRequests:429,RequestHeaderFieldsTooLarge:431,UnavailableForLegalReasons:451,InternalServerError:500,NotImplemented:501,BadGateway:502,ServiceUnavailable:503,GatewayTimeout:504,HttpVersionNotSupported:505,VariantAlsoNegotiates:506,InsufficientStorage:507,LoopDetected:508,NotExtended:510,NetworkAuthenticationRequired:511,WebServerIsDown:521,ConnectionTimedOut:522,OriginIsUnreachable:523,TimeoutOccurred:524,SslHandshakeFailed:525,InvalidSslCertificate:526};Object.entries(Be).forEach(([e,t])=>{Be[t]=e});function kt(e){const t=new W(e),n=pt(W.prototype.request,t);return i.extend(n,W.prototype,t,{allOwnKeys:!0}),i.extend(n,t,null,{allOwnKeys:!0}),n.create=function(s){return kt(X(e,s))},n}const T=kt(le);T.Axios=W;T.CanceledError=ue;T.CancelToken=kr;T.isCancel=Nt;T.VERSION=Me;T.toFormData=Se;T.AxiosError=h;T.Cancel=T.CanceledError;T.all=function(t){return Promise.all(t)};T.spread=jr;T.isAxiosError=qr;T.mergeConfig=X;T.AxiosHeaders=L;T.formToJSON=e=>Pt(i.isHTMLForm(e)?new FormData(e):e);T.getAdapter=Bt.getAdapter;T.HttpStatusCode=Be;T.default=T;const{Axios:zr,AxiosError:$r,CanceledError:Vr,isCancel:Jr,CancelToken:Wr,VERSION:Kr,all:Xr,Cancel:Gr,isAxiosError:Qr,spread:Yr,toFormData:Zr,AxiosHeaders:es,HttpStatusCode:ts,formToJSON:ns,getAdapter:rs,mergeConfig:ss,create:os}=T;window.axios=T;window.axios.defaults.headers.common["X-Requested-With"]="XMLHttpRequest";(function(){const t=document.querySelectorAll(".tab"),n=document.querySelectorAll(".panel");t.forEach(r=>{r.addEventListener("click",()=>{const s=+r.dataset.tab;t.forEach(o=>o.classList.remove("active")),n.forEach(o=>o.classList.remove("active")),r.classList.add("active"),n[s].classList.add("active")})})})();(function(){const t=document.getElementById("menu-toggle"),n=document.getElementById("mobile-menu");t.addEventListener("click",()=>{t.classList.toggle("open"),n.classList.toggle("open")}),n.querySelectorAll("a").forEach(r=>r.addEventListener("click",()=>{t.classList.remove("open"),n.classList.remove("open")}))})();(function(){const t=document.getElementById("header"),n=()=>t.classList.toggle("scrolled",window.scrollY>40);window.addEventListener("scroll",n,{passive:!0}),n()})();(function(){const t=new IntersectionObserver(n=>{n.forEach(r=>{r.isIntersecting&&(r.target.classList.add("in"),t.unobserve(r.target))})},{threshold:.15});document.querySelectorAll(".section-title, .about-grid, .jobs, .feature, .other-title, .archive-link, .contact-num, .contact-title, .contact-desc, .contact .btn").forEach(n=>{n.classList.add("reveal"),t.observe(n)}),document.querySelectorAll("#cards .card").forEach((n,r)=>{n.classList.add("reveal"),n.setAttribute("data-delay",String(r%3+1)),t.observe(n)})})();(function(){const t=document.querySelectorAll(".hero > *");t.forEach((n,r)=>{n.classList.add("reveal"),n.setAttribute("data-delay",String(r+1))}),window.addEventListener("load",()=>{t.forEach(n=>n.classList.add("in"))})})();document.getElementById("year").textContent=new Date().getFullYear();
+(function scrollProgress() {
+  const progressBar = document.getElementById('scroll-progress');
+  if (!progressBar) return;
+  window.addEventListener('scroll', () => {
+    const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    progressBar.style.width = scrolled + '%';
+  }, { passive: true });
+})();
+
+(function cursorSpotlight() {
+  const glow = document.getElementById('cursor-glow');
+  if (!glow || window.matchMedia('(max-width: 768px)').matches) return;
+  
+  window.addEventListener('mousemove', (e) => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+    if (!glow.classList.contains('visible')) {
+      glow.classList.add('visible');
+    }
+  }, { passive: true });
+
+  document.addEventListener('mouseleave', () => {
+    glow.classList.remove('visible');
+  });
+})();
+
+(function customCursor() {
+  if (window.matchMedia('(max-width: 768px)').matches) return;
+
+  const dot = document.querySelector('.cursor-dot');
+  const ring = document.querySelector('.cursor-ring');
+  const canvas = document.getElementById('cursor-trail');
+  if (!dot || !ring || !canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  let w, h;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let mouseX = -100, mouseY = -100;
+  let dotX = -100, dotY = -100;
+  let ringX = -100, ringY = -100;
+  let isHovering = false;
+  let isClicking = false;
+  let isText = false;
+  let isVisible = false;
+
+  const particles = [];
+  const MAX_PARTICLES = 35;
+
+  class Particle {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.alpha = 0.6;
+      this.size = Math.random() * 3 + 1.5;
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.vy = (Math.random() - 0.5) * 0.5;
+      this.decay = Math.random() * 0.015 + 0.012;
+      this.hue = Math.random() > 0.5 ? 163 : 199;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.alpha -= this.decay;
+      this.size *= 0.97;
+    }
+    draw(ctx) {
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.fillStyle = `hsla(${this.hue}, 100%, 70%, 1)`;
+      ctx.shadowColor = `hsla(${this.hue}, 100%, 70%, 0.8)`;
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  const bursts = [];
+  class BurstParticle {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.alpha = 1;
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 4 + 2;
+      this.vx = Math.cos(angle) * speed;
+      this.vy = Math.sin(angle) * speed;
+      this.size = Math.random() * 3 + 1;
+      this.hue = Math.random() > 0.3 ? 163 : 199;
+      this.decay = Math.random() * 0.02 + 0.025;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.vx *= 0.96;
+      this.vy *= 0.96;
+      this.alpha -= this.decay;
+      this.size *= 0.98;
+    }
+    draw(ctx) {
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.fillStyle = `hsla(${this.hue}, 100%, 75%, 1)`;
+      ctx.shadowColor = `hsla(${this.hue}, 100%, 70%, 0.9)`;
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  const hoverSelectors = 'a, button, .btn, .tab, .card, .feature-img-link, [role="button"]';
+  const textSelectors = 'input, textarea, [contenteditable="true"]';
+  const MAGNETIC_STRENGTH = 0.3;
+  const MAGNETIC_RANGE = 80;
+
+  let lastTrailX = 0, lastTrailY = 0;
+  let framesSinceTrail = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (!isVisible) {
+      isVisible = true;
+      dot.style.opacity = '1';
+      ring.style.opacity = '1';
+    }
+
+    const dx = mouseX - lastTrailX;
+    const dy = mouseY - lastTrailY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    framesSinceTrail++;
+
+    if (dist > 4 && framesSinceTrail > 1) {
+      if (particles.length < MAX_PARTICLES) {
+        particles.push(new Particle(mouseX, mouseY));
+      }
+      lastTrailX = mouseX;
+      lastTrailY = mouseY;
+      framesSinceTrail = 0;
+    }
+
+    const target = e.target;
+    const hoverEl = target.closest(hoverSelectors);
+    const textEl = target.closest(textSelectors);
+
+    if (textEl) {
+      if (!isText) {
+        isText = true;
+        isHovering = false;
+        dot.classList.add('text');
+        ring.classList.add('text');
+        dot.classList.remove('hover');
+        ring.classList.remove('hover');
+      }
+    } else if (hoverEl) {
+      if (!isHovering) {
+        isHovering = true;
+        isText = false;
+        dot.classList.add('hover');
+        ring.classList.add('hover');
+        dot.classList.remove('text');
+        ring.classList.remove('text');
+      }
+    } else {
+      if (isHovering || isText) {
+        isHovering = false;
+        isText = false;
+        dot.classList.remove('hover', 'text');
+        ring.classList.remove('hover', 'text');
+      }
+    }
+  }, { passive: true });
+
+  document.addEventListener('mouseleave', () => {
+    isVisible = false;
+    dot.style.opacity = '0';
+    ring.style.opacity = '0';
+  });
+
+  document.addEventListener('mousedown', () => {
+    isClicking = true;
+    dot.classList.add('click');
+    ring.classList.add('click');
+    for (let i = 0; i < 12; i++) {
+      bursts.push(new BurstParticle(mouseX, mouseY));
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    isClicking = false;
+    dot.classList.remove('click');
+    ring.classList.remove('click');
+  });
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  function getMagneticTarget() {
+    if (!isHovering) return null;
+    const hoverEls = document.querySelectorAll(hoverSelectors);
+    for (const el of hoverEls) {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = mouseX - cx;
+      const dy = mouseY - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < MAGNETIC_RANGE) {
+        return { x: cx, y: cy, strength: 1 - dist / MAGNETIC_RANGE };
+      }
+    }
+    return null;
+  }
+
+  function animate() {
+    let targetX = mouseX;
+    let targetY = mouseY;
+    const magnet = getMagneticTarget();
+    if (magnet) {
+      targetX = lerp(mouseX, magnet.x, magnet.strength * MAGNETIC_STRENGTH);
+      targetY = lerp(mouseY, magnet.y, magnet.strength * MAGNETIC_STRENGTH);
+    }
+
+    dotX = lerp(dotX, targetX, 0.25);
+    dotY = lerp(dotY, targetY, 0.25);
+    dot.style.left = dotX + 'px';
+    dot.style.top = dotY + 'px';
+
+    ringX = lerp(ringX, targetX, 0.12);
+    ringY = lerp(ringY, targetY, 0.12);
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+
+    ctx.clearRect(0, 0, w, h);
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      particles[i].update();
+      if (particles[i].alpha <= 0) {
+        particles.splice(i, 1);
+      } else {
+        particles[i].draw(ctx);
+      }
+    }
+
+    for (let i = bursts.length - 1; i >= 0; i--) {
+      bursts[i].update();
+      if (bursts[i].alpha <= 0) {
+        bursts.splice(i, 1);
+      } else {
+        bursts[i].draw(ctx);
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
