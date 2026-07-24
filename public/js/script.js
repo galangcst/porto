@@ -1,3 +1,23 @@
+// ===== PRELOADER LOGIC =====
+function hidePreloader() {
+    const preloader = document.getElementById("preloader");
+    if (preloader && !preloader.classList.contains("fade-out")) {
+        setTimeout(() => {
+            preloader.classList.add("fade-out");
+            setTimeout(() => {
+                preloader.remove();
+            }, 500);
+        }, 500);
+    }
+}
+
+if (document.readyState === "complete" || document.readyState === "interactive") {
+    hidePreloader();
+} else {
+    window.addEventListener("load", hidePreloader);
+    document.addEventListener("DOMContentLoaded", hidePreloader);
+}
+
 // ===== YEAR =====
 document.getElementById("year").textContent = new Date().getFullYear();
 

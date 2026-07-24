@@ -15,22 +15,70 @@
       rel="stylesheet"
     />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+      #preloader{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:#0a192f;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease,visibility .5s ease}
+      #preloader.fade-out{opacity:0;visibility:hidden}
+      .loader-content{display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+      .loader-logo{width:80px;height:80px}
+      .loader-logo svg{width:80px;height:80px;display:block;animation:pulseGlow 2s infinite ease-in-out}
+      .hexagon{stroke-dasharray:300;stroke-dashoffset:300;animation:drawHex 2s infinite ease-in-out alternate}
+      .loader-bar-container{width:140px;height:3px;background:#233554;border-radius:3px;overflow:hidden}
+      .loader-bar{width:0;height:100%;background:#64ffda;box-shadow:0 0 10px #64ffda;animation:fillBar 1.5s cubic-bezier(.65,0,.35,1) forwards}
+      .loader-text{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#64ffda;letter-spacing:.15em;animation:blinkTxt 1.5s infinite}
+      @keyframes drawHex{0%{stroke-dashoffset:300}100%{stroke-dashoffset:0}}
+      @keyframes fillBar{0%{width:0}50%{width:70%}100%{width:100%}}
+      @keyframes pulseGlow{0%,100%{transform:scale(1);filter:drop-shadow(0 0 5px rgba(100,255,218,.4))}50%{transform:scale(1.08);filter:drop-shadow(0 0 18px rgba(100,255,218,.8))}}
+      @keyframes blinkTxt{0%,100%{opacity:1}50%{opacity:.4}}
+    </style>
   </head>
   <body>
+    <!-- Fullscreen Modern Preloader -->
+    <div id="preloader">
+      <div class="loader-content">
+        <div class="loader-logo">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+            <polygon points="50 5, 90 25, 90 75, 50 95, 10 75, 10 25" stroke="#64ffda" stroke-width="3" fill="none" class="hexagon" />
+            <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#64ffda" font-family="'JetBrains Mono', monospace" font-size="32" font-weight="bold">G</text>
+          </svg>
+        </div>
+        <div class="loader-bar-container">
+          <div class="loader-bar"></div>
+        </div>
+        <span class="loader-text">Memuat Portofolio...</span>
+      </div>
+    </div>
+
+    <!-- Scroll progress & cursor spotlight glow -->
+    <div id="scroll-progress"></div>
+    <div id="cursor-glow"></div>
+
+    <!-- Custom cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+    <canvas id="cursor-trail"></canvas>
+
     <!-- Left fixed: socials -->
     <aside class="side side-left">
       <ul>
         <li>
-          <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">GH</a>
+          <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.57 2.34 1.12 2.91.85.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.4 9.4 0 0 1 2.5-.34c.85 0 1.71.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.95.68 1.92 0 1.39-.01 2.51-.01 2.85 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/></svg>
+          </a>
         </li>
         <li>
-          <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">IN</a>
+          <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+          </a>
         </li>
         <li>
-          <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter">TW</a>
+          <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.24 8.56c.01.14.01.28.01.42 0 4.34-3.3 9.34-9.34 9.34A9.28 9.28 0 0 1 3.8 16.8a6.8 6.8 0 0 0 .79.04 6.58 6.58 0 0 0 4.08-1.41 3.29 3.29 0 0 1-3.07-2.28c.5.08 1 .08 1.52-.06A3.28 3.28 0 0 1 4.48 9.9v-.04c.46.26.98.41 1.53.43a3.29 3.29 0 0 1-1.02-4.38 9.33 9.33 0 0 0 6.77 3.43 3.28 3.28 0 0 1 5.6-3 6.56 6.56 0 0 0 2.08-.8 3.3 3.3 0 0 1-1.44 1.82A6.6 6.6 0 0 0 20 6.8a6.68 6.68 0 0 1-1.76 1.76z"/></svg>
+          </a>
         </li>
         <li>
-          <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">IG</a>
+          <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.16c2.72 0 3.06.01 4.12.06 1.07.05 1.8.22 2.43.46.66.26 1.21.6 1.77 1.16.55.55.9 1.11 1.16 1.77.25.64.41 1.36.46 2.43.05 1.07.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.07-.22 1.8-.46 2.43a4.92 4.92 0 0 1-1.16 1.77c-.55.55-1.11.9-1.77 1.16-.64.25-1.36.41-2.43.46-1.07.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.07-.05-1.8-.22-2.43-.46a4.92 4.92 0 0 1-1.77-1.16 4.92 4.92 0 0 1-1.16-1.77c-.25-.64-.41-1.36-.46-2.43C2.17 15.06 2.16 14.72 2.16 12s.01-3.06.06-4.12c.05-1.07.22-1.8.46-2.43A4.92 4.92 0 0 1 3.84 3.68 4.92 4.92 0 0 1 5.6 2.52c.64-.25 1.36-.41 2.43-.46C9.1 2.01 9.44 2 12.16 2H12zm0 1.8c-2.67 0-2.99.01-4.04.06-.98.04-1.5.2-1.86.34-.47.18-.8.4-1.15.75s-.57.68-.75 1.15c-.13.35-.3.88-.34 1.86-.05 1.05-.06 1.37-.06 4.04s.01 2.99.06 4.04c.04.98.2 1.5.34 1.86.18.47.4.8.75 1.15s.68.57 1.15.75c.35.13.88.3 1.86.34 1.05.05 1.37.06 4.04.06s2.99-.01 4.04-.06c.98-.04 1.5-.2 1.86-.34.47-.18.8-.4 1.15-.75s.57-.68.75-1.15c.13-.35.3-.88.34-1.86.05-1.05.06-1.37.06-4.04s-.01-2.99-.06-4.04c-.04-.98-.2-1.5-.34-1.86a3.1 3.1 0 0 0-.75-1.15 3.1 3.1 0 0 0-1.15-.75c-.35-.13-.88-.3-1.86-.34-1.05-.05-1.37-.06-4.04-.06zm0 3.06a4.98 4.98 0 1 1 0 9.96 4.98 4.98 0 0 1 0-9.96zm0 8.21a3.24 3.24 0 1 0 0-6.47 3.24 3.24 0 0 0 0 6.47zm5.18-8.42a1.16 1.16 0 1 1-2.33 0 1.16 1.16 0 0 1 2.33 0z"/></svg>
+          </a>
         </li>
       </ul>
       <div class="side-line"></div>
@@ -73,15 +121,12 @@
     </div>
 
     <main>
-      <!-- Hero -->
       <section id="hero" class="hero">
         <p class="tag">Halo, nama saya</p>
         <h1 class="big name">Galang Cikal Sugiantoro.</h1>
-        <h2 class="big sub">Saya membangun aplikasi web.</h2>
+        <h2 class="big sub">Saya <span id="typewriter">code writer.</span></h2>
         <p class="hero-desc">
-          Saya seorang Fullstack Developer yang fokus membangun aplikasi web
-          yang cepat, rapi, dan mudah dipakai — dari sisi tampilan sampai server
-          dan basis data.
+          Fokus menciptakan kode yang efisien, arsitektur server yang tangguh, dan pengalaman pengguna yang luar biasa.
         </p>
         <a class="btn big-btn" href="#work">Lihat proyek saya</a>
       </section>
@@ -183,7 +228,6 @@
             </a>
           </div>
           <div class="feature-text">
-            <p class="feature-label"><span class="feature-num">01</span> Proyek Unggulan</p>
             <h4 class="feature-title"><a href="{{ asset('app/tte/index.html') }}">AUTO TTE</a></h4>
             <div class="feature-desc">
               <p>
@@ -224,7 +268,6 @@
             </a>
           </div>
           <div class="feature-text">
-            <p class="feature-label"><span class="feature-num">02</span> Proyek Unggulan</p>
             <h4 class="feature-title"><a href="#">Sistem Bimbingan Skripsi</a></h4>
             <div class="feature-desc">
               <p>
@@ -266,7 +309,6 @@
             </a>
           </div>
           <div class="feature-text">
-            <p class="feature-label"><span class="feature-num">03</span> Proyek Unggulan</p>
             <h4 class="feature-title"><a href="#">Sistem Bimbingan Ruangan</a></h4>
             <div class="feature-desc">
               <p>
@@ -307,7 +349,6 @@
             </a>
           </div>
           <div class="feature-text">
-            <p class="feature-label"><span class="feature-num">04</span> Proyek Unggulan</p>
             <h4 class="feature-title"><a href="#">Web Portofolio Ini</a></h4>
             <div class="feature-desc">
               <p>

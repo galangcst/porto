@@ -15,8 +15,38 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}" />
+    <style>
+      #preloader{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:#0a192f;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease,visibility .5s ease}
+      #preloader.fade-out{opacity:0;visibility:hidden}
+      .loader-content{display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+      .loader-logo{width:80px;height:80px}
+      .loader-logo svg{width:80px;height:80px;display:block;animation:pulseGlow 2s infinite ease-in-out}
+      .hexagon{stroke-dasharray:300;stroke-dashoffset:300;animation:drawHex 2s infinite ease-in-out alternate}
+      .loader-bar-container{width:140px;height:3px;background:#233554;border-radius:3px;overflow:hidden}
+      .loader-bar{width:0;height:100%;background:#64ffda;box-shadow:0 0 10px #64ffda;animation:fillBar 1.5s cubic-bezier(.65,0,.35,1) forwards}
+      .loader-text{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#64ffda;letter-spacing:.15em;animation:blinkTxt 1.5s infinite}
+      @keyframes drawHex{0%{stroke-dashoffset:300}100%{stroke-dashoffset:0}}
+      @keyframes fillBar{0%{width:0}50%{width:70%}100%{width:100%}}
+      @keyframes pulseGlow{0%,100%{transform:scale(1);filter:drop-shadow(0 0 5px rgba(100,255,218,.4))}50%{transform:scale(1.08);filter:drop-shadow(0 0 18px rgba(100,255,218,.8))}}
+      @keyframes blinkTxt{0%,100%{opacity:1}50%{opacity:.4}}
+    </style>
   </head>
   <body>
+    <!-- Fullscreen Modern Preloader -->
+    <div id="preloader">
+      <div class="loader-content">
+        <div class="loader-logo">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+            <polygon points="50 5, 90 25, 90 75, 50 95, 10 75, 10 25" stroke="#64ffda" stroke-width="3" fill="none" class="hexagon" />
+            <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#64ffda" font-family="'JetBrains Mono', monospace" font-size="32" font-weight="bold">G</text>
+          </svg>
+        </div>
+        <div class="loader-bar-container">
+          <div class="loader-bar"></div>
+        </div>
+        <span class="loader-text">Memuat Portofolio...</span>
+      </div>
+    </div>
     <!-- Left fixed: socials -->
     <aside class="side side-left">
       <ul>
@@ -222,6 +252,43 @@
 
         <div class="feature">
           <div class="feature-img">
+            <a href="{{ asset('app/tte/index.html') }}" class="feature-img-link">
+              <img src="{{ asset('gmbr/tte.png') }}" alt="Pratinjau AUTO TTE" />
+            </a>
+          </div>
+          <div class="feature-text">
+            <h4 class="feature-title"><a href="{{ asset('app/tte/index.html') }}">AUTO TTE</a></h4>
+            <div class="feature-desc">
+              <p>
+                Aplikasi otomatisasi Tanda Tangan Elektronik (TTE) pada dokumen.
+                Mempercepat proses penandatanganan berkas secara massal,
+                sehingga lebih cepat, rapi, dan minim kesalahan.
+              </p>
+            </div>
+            <ul class="feature-tech">
+              <li>Python</li>
+              <li>Automation</li>
+              <li>PDF</li>
+            </ul>
+            <div class="feature-links">
+              <a href="#" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.57 2.34 1.12 2.91.85.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.4 9.4 0 0 1 2.5-.34c.85 0 1.71.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.95.68 1.92 0 1.39-.01 2.51-.01 2.85 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/>
+                </svg>
+              </a>
+              <a href="{{ asset('app/tte/index.html') }}" aria-label="External Link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature reverse">
+          <div class="feature-img">
             <a href="#" class="feature-img-link">
               <img
                 src="https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=web%20application%20dashboard%20for%20thesis%20guidance%20system%2C%20dark%20navy%20ui%2C%20teal%20accents%2C%20clean%20modern%20design%2C%20rest%20api&image_size=landscape_4_3"
@@ -230,10 +297,7 @@
             </a>
           </div>
           <div class="feature-text">
-            <p class="feature-label">Proyek Unggulan</p>
-            <h4 class="feature-title">
-              <a href="#">Sistem Bimbingan Skripsi</a>
-            </h4>
+            <h4 class="feature-title"><a href="#">Sistem Bimbingan Skripsi</a></h4>
             <div class="feature-desc">
               <p>
                 Aplikasi web berbasis REST API untuk mengelola proses bimbingan
@@ -264,7 +328,7 @@
           </div>
         </div>
 
-        <div class="feature reverse">
+        <div class="feature">
           <div class="feature-img">
             <a href="#" class="feature-img-link">
               <img
@@ -274,10 +338,7 @@
             </a>
           </div>
           <div class="feature-text">
-            <p class="feature-label">Proyek Unggulan</p>
-            <h4 class="feature-title">
-              <small><a href="#">Sistem Bimbingan Ruangan</a></small>
-            </h4>
+            <h4 class="feature-title"><a href="#">Sistem Bimbingan Ruangan</a></h4>
             <div class="feature-desc">
               <p>
                 Aplikasi web untuk mengatur jadwal dan penggunaan ruangan
@@ -307,7 +368,7 @@
           </div>
         </div>
 
-        <div class="feature">
+        <div class="feature reverse">
           <div class="feature-img">
             <a href="#" class="feature-img-link">
               <img
@@ -317,7 +378,6 @@
             </a>
           </div>
           <div class="feature-text">
-            <p class="feature-label">Proyek Unggulan</p>
             <h4 class="feature-title"><a href="#">Web Portofolio Ini</a></h4>
             <div class="feature-desc">
               <p>
