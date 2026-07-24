@@ -17,8 +17,39 @@
     />
     <link rel="stylesheet" href="assets/app.css" />
     <script type="module" src="assets/app.js"></script>
+    <style>
+      #preloader{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:#0a192f;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease,visibility .5s ease}
+      #preloader.fade-out{opacity:0;visibility:hidden}
+      .loader-content{display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+      .loader-logo{width:80px;height:80px}
+      .loader-logo svg{width:80px;height:80px;display:block;animation:pulseGlow 2s infinite ease-in-out}
+      .hexagon{stroke-dasharray:300;stroke-dashoffset:300;animation:drawHex 2s infinite ease-in-out alternate}
+      .loader-bar-container{width:140px;height:3px;background:#233554;border-radius:3px;overflow:hidden}
+      .loader-bar{width:0;height:100%;background:#64ffda;box-shadow:0 0 10px #64ffda;animation:fillBar 1.5s cubic-bezier(.65,0,.35,1) forwards}
+      .loader-text{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#64ffda;letter-spacing:.15em;animation:blinkTxt 1.5s infinite}
+      @keyframes drawHex{0%{stroke-dashoffset:300}100%{stroke-dashoffset:0}}
+      @keyframes fillBar{0%{width:0}50%{width:70%}100%{width:100%}}
+      @keyframes pulseGlow{0%,100%{transform:scale(1);filter:drop-shadow(0 0 5px rgba(100,255,218,.4))}50%{transform:scale(1.08);filter:drop-shadow(0 0 18px rgba(100,255,218,.8))}}
+      @keyframes blinkTxt{0%,100%{opacity:1}50%{opacity:.4}}
+    </style>
   </head>
   <body>
+    <!-- Fullscreen Modern Preloader -->
+    <div id="preloader">
+      <div class="loader-content">
+        <div class="loader-logo">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+            <polygon points="50 5, 90 25, 90 75, 50 95, 10 75, 10 25" stroke="#64ffda" stroke-width="3" fill="none" class="hexagon" />
+            <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#64ffda" font-family="'JetBrains Mono', monospace" font-size="32" font-weight="bold">G</text>
+          </svg>
+        </div>
+        <div class="loader-bar-container">
+          <div class="loader-bar"></div>
+        </div>
+        <span class="loader-text">Memuat Portofolio...</span>
+      </div>
+    </div>
+
     <!-- Scroll progress & cursor spotlight glow -->
     <div id="scroll-progress"></div>
     <div id="cursor-glow"></div>
@@ -92,7 +123,6 @@
     </div>
 
     <main>
-      <!-- Hero -->
       <section id="hero" class="hero">
         <p class="tag">Halo, nama saya</p>
         <h1 class="big name">Galang Cikal Sugiantoro.</h1>
@@ -200,7 +230,6 @@
             </a>
           </div>
           <div class="feature-text">
-            <p class="feature-label"><span class="feature-num">01</span> Proyek Unggulan</p>
             <h4 class="feature-title"><a href="app/tte/index.html">AUTO TTE</a></h4>
             <div class="feature-desc">
               <p>
@@ -241,7 +270,6 @@
             </a>
           </div>
           <div class="feature-text">
-            <p class="feature-label"><span class="feature-num">02</span> Proyek Unggulan</p>
             <h4 class="feature-title"><a href="#">Sistem Bimbingan Skripsi</a></h4>
             <div class="feature-desc">
               <p>
@@ -283,7 +311,6 @@
             </a>
           </div>
           <div class="feature-text">
-            <p class="feature-label"><span class="feature-num">03</span> Proyek Unggulan</p>
             <h4 class="feature-title"><a href="#">Sistem Bimbingan Ruangan</a></h4>
             <div class="feature-desc">
               <p>
@@ -324,7 +351,6 @@
             </a>
           </div>
           <div class="feature-text">
-            <p class="feature-label"><span class="feature-num">04</span> Proyek Unggulan</p>
             <h4 class="feature-title"><a href="#">Web Portofolio Ini</a></h4>
             <div class="feature-desc">
               <p>
@@ -372,8 +398,12 @@
             </div>
             <h4><a href="#">Berusaha Tetap Normal</a></h4>
             <p>Proyek pribadi untuk terus belajar dan menjaga semangat ngoding di sela kesibukan sehari-hari.</p>
-            <ul class="card-tech"><li>JavaScript</li><li>React</li></ul>
+            <ul class="card-tech">
+              <li>JavaScript</li>
+              <li>React</li>
+            </ul>
           </li>
+
           <li class="card">
             <div class="card-top">
               <span class="folder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" /></svg></span>
@@ -384,8 +414,12 @@
             </div>
             <h4><a href="#">Pekerjaan Kantoran</a></h4>
             <p>Berbagai tool dan skrip kecil untuk membantu mempermudah pekerjaan administrasi harian di kantor.</p>
-            <ul class="card-tech"><li>Python</li><li>Bash</li></ul>
+            <ul class="card-tech">
+              <li>Python</li>
+              <li>Bash</li>
+            </ul>
           </li>
+
           <li class="card">
             <div class="card-top">
               <span class="folder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" /></svg></span>
@@ -395,8 +429,13 @@
             </div>
             <h4><a href="#">Cari Uang</a></h4>
             <p>Kumpulan proyek freelance kecil untuk klien, dari landing page sampai aplikasi web sederhana.</p>
-            <ul class="card-tech"><li>Node</li><li>Firebase</li><li>TypeScript</li></ul>
+            <ul class="card-tech">
+              <li>Node</li>
+              <li>Firebase</li>
+              <li>TypeScript</li>
+            </ul>
           </li>
+
           <li class="card">
             <div class="card-top">
               <span class="folder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" /></svg></span>
@@ -407,8 +446,12 @@
             </div>
             <h4><a href="#">Eksperimen Go</a></h4>
             <p>Latihan membuat aplikasi dan API kecil menggunakan Go untuk belajar backend yang cepat dan ringan.</p>
-            <ul class="card-tech"><li>Go</li><li>REST API</li></ul>
+            <ul class="card-tech">
+              <li>Go</li>
+              <li>REST API</li>
+            </ul>
           </li>
+
           <li class="card">
             <div class="card-top">
               <span class="folder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" /></svg></span>
@@ -419,8 +462,11 @@
             </div>
             <h4><a href="#">Belajar Java</a></h4>
             <p>Proyek latihan dasar pemrograman Java, dari konsep OOP sampai aplikasi konsol sederhana.</p>
-            <ul class="card-tech"><li>Java</li></ul>
+            <ul class="card-tech">
+              <li>Java</li>
+            </ul>
           </li>
+
           <li class="card">
             <div class="card-top">
               <span class="folder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" /></svg></span>
@@ -430,7 +476,10 @@
             </div>
             <h4><a href="#">Dan Lain-lain</a></h4>
             <p>Berbagai proyek iseng dan eksperimen kecil lainnya yang saya buat sambil belajar teknologi baru.</p>
-            <ul class="card-tech"><li>Linux</li><li>Bash</li></ul>
+            <ul class="card-tech">
+              <li>Linux</li>
+              <li>Bash</li>
+            </ul>
           </li>
         </ul>
       </section>
